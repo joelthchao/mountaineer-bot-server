@@ -15,16 +15,23 @@ def query_cwb_forecast(name):
         return {
             'errno': 1,
             'errmsg': 'Name not found in coordinate mapping ({})'.format(name),
-            'data': '',
+            'data': {},
         }
+
+    ts = arrow.now()
     html = get_html_by_selenium(url)
     title, df = parse_cwb_hourly_forcast(html)
-    output_file = arrow.now().format('YYYYMMDDTHHmmss') + '.png'
+    output_file = ts.format('YYYYMMDDTHHmmss') + '.png'
     df2img(title, df, output_file)
+
     return {
         'errno': 0,
         'errmsg': 'success',
-        'image_path': output_file
+        'data': {
+            'location': name,
+            'query_time': ts.format('YYYY-MM-DDTHH:mm:ssZZ'),
+            'image_url': output_file,
+        }
     }
 
 

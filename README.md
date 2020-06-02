@@ -2,7 +2,9 @@
 Server for mountaineer bot
 
 # TODO
-- [v] Convert CWB dataframe to image
+- [x] Convert CWB dataframe to image
+- [x] Add graph title to prevent error
 - [ ] Better error code system
-- [ ] Add graph title to prevent error
 - [ ] Error handling
+- [ ] Style configuration
+- [ ] Lint configuration

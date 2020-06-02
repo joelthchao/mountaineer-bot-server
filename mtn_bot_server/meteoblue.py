@@ -1,6 +1,7 @@
 import os
 from urllib.parse import urlparse
 
+import arrow
 from bs4 import BeautifulSoup
 import pandas as pd
 
@@ -20,13 +21,19 @@ def query_meteoblue_forecast(name):
             'image_url': '',
         }
 
+    ts = arrow.now()
     url = 'https://www.meteoblue.com/en/weather/week/{}'.format(coordinate)
     html = get_html_by_selenium(url)
     image_url = parse_image_url(html)
+
     return {
         'errno': 0,
         'errmsg': 'success',
-        'image_url': image_url
+        'data': {
+            'location': name,
+            'time': ts.format('YYYY-MM-DDTHH:mm:ssZZ'),
+            'image_url': image_url,
+        }
     }
 
 
