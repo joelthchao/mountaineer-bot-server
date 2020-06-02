@@ -1,7 +1,8 @@
+import arrow
 from bs4 import BeautifulSoup
 import pandas as pd
 
-from mtn_bot_server.utils import get_html_by_selenium
+from mtn_bot_server.utils import get_html_by_selenium, df2img
 
 
 mapping = pd.read_csv('resources/codes.csv').set_index('name').to_dict()['code']
@@ -17,8 +18,14 @@ def query_cwb_forecast(name):
             'data': '',
         }
     html = get_html_by_selenium(url)
-    df = parse_cwb_hourly_forcast(html)
-    print(df)
+    title, df = parse_cwb_hourly_forcast(html)
+    output_file = arrow.now().format('YYYYMMDDTHHmmss') + '.png'
+    df2img(title, df, output_file)
+    return {
+        'errno': 0,
+        'errmsg': 'success',
+        'image_path': output_file
+    }
 
 
 def make_cwb_url(name):
@@ -30,6 +37,7 @@ def make_cwb_url(name):
 
 def parse_cwb_hourly_forcast(html):
     soup = BeautifulSoup(html, features='html.parser')
+    title = soup.find('h2', attrs={'class': 'main-title'}).find('span').text.strip()
     table = soup.find('div', attrs={'id': 'PC_hr'}).find('table', attrs={'class': 'table'})
     rows = list(table.find_all('tr'))
     times = parse_cwb_time_row(rows[0])
@@ -49,7 +57,7 @@ def parse_cwb_hourly_forcast(html):
         'desc': descs,
     })
     df = df.set_index('time')
-    return df
+    return title, df
 
 
 def parse_cwb_time_row(row):
@@ -96,4 +104,4 @@ def parse_cwb_desc_row(row):
 
 
 if __name__ == '__main__':
-    query_cwb_forecast('玉山')
+    print(query_cwb_forecast('南湖大山'))

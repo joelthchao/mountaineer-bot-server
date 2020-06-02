@@ -1,0 +1,6 @@
+arrow
+beautifulsoup4
+imgkit
+pandas
+requests
+selenium
