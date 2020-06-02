@@ -1,3 +1,5 @@
+from enum import Enum
+
 import imgkit
 import requests
 from selenium import webdriver
@@ -5,6 +7,13 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
+
+
+class ErrorCode(Enum):
+    SUCCESS = 0
+    ERR_NETWORK = 1
+    ERR_MISSING = 2
+    ERR_UNKNOWN = 3
 
 
 def get_html_by_selenium(url):

@@ -1,32 +1,76 @@
+import os
+
 import arrow
 from bs4 import BeautifulSoup
 import pandas as pd
 
-from mtn_bot_server.utils import get_html_by_selenium, df2img
+from mtn_bot_server.utils import (
+    get_html_by_selenium,
+    df2img,
+    ErrorCode,
+)
 
 
 mapping = pd.read_csv('resources/codes.csv').set_index('name').to_dict()['code']
 
 
 def query_cwb_forecast(name):
+    ts = arrow.now()
+    output_file = '{}-{}-cwb.png'.format(name, ts.format('YYYYMMDDTHH'))
+    if os.path.exists(output_file):
+        return {
+            'errno': ErrorCode.SUCCESS.value,
+            'errmsg': 'Success',
+            'data': {
+                'location': name,
+                'query_time': 'cached',
+                'image_url': output_file,
+            }
+        }
+
+    # compose cwb query url
     try:
         url = make_cwb_url(name)
     except KeyError:
         return {
-            'errno': 1,
+            'errno': ErrorCode.ERR_MISSING.value,
             'errmsg': 'Name not found in coordinate mapping ({})'.format(name),
             'data': {},
         }
 
-    ts = arrow.now()
-    html = get_html_by_selenium(url)
-    title, df = parse_cwb_hourly_forcast(html)
-    output_file = ts.format('YYYYMMDDTHHmmss') + '.png'
-    df2img(title, df, output_file)
+    # retrive html content by selenium
+    try:
+        html = get_html_by_selenium(url)
+    except:
+        return {
+            'errno': ErrorCode.ERR_NETWORK.value,
+            'errmsg': 'Encounter network issue ({})'.format(url),
+            'data': {},
+        }
+
+    # parse data
+    try:
+        title, df = parse_cwb_hourly_forcast(html)
+    except:
+        return {
+            'errno': ErrorCode.ERR_UNKNOWN.value,
+            'errmsg': 'Encounter parse issue ({})'.format(url),
+            'data': {},
+        }
+
+    # convert to photo
+    try:
+        df2img(title, df, output_file)
+    except:
+        return {
+            'errno': ErrorCode.ERR_UNKNOWN.value,
+            'errmsg': 'Encounter image conversion issue ({})'.format(url),
+            'data': {},
+        }
 
     return {
-        'errno': 0,
-        'errmsg': 'success',
+        'errno': ErrorCode.SUCCESS.value,
+        'errmsg': 'Success',
         'data': {
             'location': name,
             'query_time': ts.format('YYYY-MM-DDTHH:mm:ssZZ'),
