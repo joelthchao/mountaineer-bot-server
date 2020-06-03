@@ -4,6 +4,7 @@ import arrow
 from bs4 import BeautifulSoup
 import pandas as pd
 
+from mtn_bot_server import config
 from mtn_bot_server.utils import (
     get_html_by_selenium,
     df2img,
@@ -14,27 +15,28 @@ from mtn_bot_server.utils import (
 mapping = pd.read_csv('resources/codes.csv').set_index('name').to_dict()['code']
 
 
-def query_cwb_forecast(name):
+def query_cwb_forecast(location):
     ts = arrow.now()
-    output_file = '{}-{}-cwb.png'.format(name, ts.format('YYYYMMDDTHH'))
+    image_name = '{}-{}-cwb.png'.format(location, ts.format('YYYYMMDDTHH'))
+    output_file = os.path.join(config.CWB_IMAGE_PATH, image_name)
     if os.path.exists(output_file):
         return {
             'errno': ErrorCode.SUCCESS.value,
             'errmsg': 'Success',
             'data': {
-                'location': name,
+                'location': location,
                 'query_time': 'cached',
-                'image_url': output_file,
+                'image_name': image_name,
             }
         }
 
     # compose cwb query url
     try:
-        url = make_cwb_url(name)
+        url = make_cwb_url(location)
     except KeyError:
         return {
             'errno': ErrorCode.ERR_MISSING.value,
-            'errmsg': 'Name not found in coordinate mapping ({})'.format(name),
+            'errmsg': 'Location not found in coordinate mapping ({})'.format(location),
             'data': {},
         }
 
@@ -72,16 +74,16 @@ def query_cwb_forecast(name):
         'errno': ErrorCode.SUCCESS.value,
         'errmsg': 'Success',
         'data': {
-            'location': name,
+            'location': location,
             'query_time': ts.format('YYYY-MM-DDTHH:mm:ssZZ'),
-            'image_url': output_file,
+            'image_name': image_name,
         }
     }
 
 
-def make_cwb_url(name):
+def make_cwb_url(location):
     url_template = 'https://www.cwb.gov.tw/V8/C/L/Mountain/Mountain.html?PID={}'
-    code = mapping[name]
+    code = mapping[location]
     url = url_template.format(code)
     return url
 

@@ -7,5 +7,8 @@ Server for mountaineer bot
 - [x] Cache query
 - [x] Better error code system
 - [x] Error handling
+- [x] Establish API
+- [ ] API document
+- [ ] logging
 - [ ] Style configuration
 - [ ] Lint configuration

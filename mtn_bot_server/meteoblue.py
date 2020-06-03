@@ -14,9 +14,9 @@ from mtn_bot_server.utils import (
 mapping = pd.read_csv('resources/coordinates.csv').set_index('name').to_dict()['coordinate']
 
 
-def query_meteoblue_forecast(name):
+def query_meteoblue_forecast(location):
     ts = arrow.now()
-    output_file = '{}-{}-meteoblue.txt'.format(name, ts.format('YYYYMMDDTHH'))
+    output_file = '{}-{}-meteoblue.txt'.format(location, ts.format('YYYYMMDDTHH'))
     if os.path.exists(output_file):
         with open(output_file, 'r') as f:
             image_url = next(f).strip()
@@ -24,19 +24,19 @@ def query_meteoblue_forecast(name):
             'errno': ErrorCode.SUCCESS.value,
             'errmsg': 'Success',
             'data': {
-                'location': name,
-                'time': 'cache',
+                'location': location,
+                'time': 'cached',
                 'image_url': image_url,
             }
         }
 
     # compose meteoblue query url
     try:
-        url = make_meteoblue_url(name)
+        url = make_meteoblue_url(location)
     except KeyError:
         return {
             'errno': ErrorCode.ERR_MISSING.value,
-            'errmsg': 'Name not found in coordinate mapping ({})'.format(name),
+            'errmsg': 'Location not found in coordinate mapping ({})'.format(location),
             'data': {},
         }
 
@@ -67,15 +67,15 @@ def query_meteoblue_forecast(name):
         'errno': ErrorCode.SUCCESS.value,
         'errmsg': 'Success',
         'data': {
-            'location': name,
+            'location': location,
             'time': ts.format('YYYY-MM-DDTHH:mm:ssZZ'),
             'image_url': image_url,
         }
     }
 
 
-def make_meteoblue_url(name):
-    coordinate = mapping[name]
+def make_meteoblue_url(location):
+    coordinate = mapping[location]
     url = 'https://www.meteoblue.com/en/weather/week/{}'.format(coordinate)
     return url
 
