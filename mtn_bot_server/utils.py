@@ -1,4 +1,5 @@
 from enum import Enum
+import re
 
 import imgkit
 import requests
@@ -76,3 +77,11 @@ def df2img(title, df, img_file):
         'quiet': '',
     }
     imgkit.from_string(html, img_file, options=options)
+
+
+weather_query_re = re.compile(r'查?(.*[^的])的?(天氣|預報)')
+
+
+def parse_query_request(text):
+    match = weather_query_re.match(text)
+    return match.group(1).strip()

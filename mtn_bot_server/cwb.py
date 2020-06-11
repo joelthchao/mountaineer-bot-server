@@ -1,3 +1,4 @@
+import base64
 import os
 
 import arrow
@@ -17,7 +18,9 @@ mapping = pd.read_csv('resources/codes.csv').set_index('name').to_dict()['code']
 
 def query_cwb_forecast(location):
     ts = arrow.now()
-    image_name = '{}-{}-cwb.png'.format(location, ts.format('YYYYMMDDTHH'))
+    # encode utf-8 characters for url safety
+    location_key = base64.b64encode(location.encode('utf-8')).decode('utf-8')
+    image_name = '{}-{}-cwb.jpg'.format(location_key, ts.format('YYYYMMDDTHH'))
     output_file = os.path.join(config.CWB_IMAGE_PATH, image_name)
     if os.path.exists(output_file):
         return {
