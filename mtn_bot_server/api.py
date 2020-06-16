@@ -67,4 +67,4 @@ def image(path):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run('0.0.0.0', port=config.PORT, ssl_context=(config.SSL_CRT, config.SSL_PRIVATE_KEY))
