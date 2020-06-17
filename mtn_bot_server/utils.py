@@ -1,5 +1,6 @@
 from enum import Enum
 import re
+import sys
 
 import imgkit
 import requests
@@ -76,8 +77,10 @@ def df2img(title, df, img_file):
         'disable-smart-width': '',
         'encoding': 'UTF-8',
         'quiet': '',
-        'xvfb': '',
     }
+    # it requires xvfb package on linux.
+    if sys.platform != 'darwin':
+        options['xvfb'] = ''
     imgkit.from_string(html, img_file, options=options)
 
 
