@@ -9,6 +9,7 @@ Server for mountaineer bot
 - [x] Error handling
 - [x] Establish API
 - [ ] API document
+- [x] Line bot integration
 - [ ] logging
-- [ ] Style configuration
-- [ ] Lint configuration
+- [x] Style configuration
+- [x] Lint configuration

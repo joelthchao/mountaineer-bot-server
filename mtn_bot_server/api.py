@@ -1,4 +1,3 @@
-import json
 import os
 
 from flask import Flask, request, abort, send_from_directory

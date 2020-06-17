@@ -1,6 +1,3 @@
-import os
-
-from mtn_bot_server import config
 from mtn_bot_server.cwb import query_cwb_forecast
 from mtn_bot_server.meteoblue import query_meteoblue_forecast
 from mtn_bot_server.utils import ErrorCode

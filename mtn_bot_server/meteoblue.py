@@ -1,5 +1,4 @@
 import os
-from urllib.parse import urlparse
 
 import arrow
 from bs4 import BeautifulSoup
