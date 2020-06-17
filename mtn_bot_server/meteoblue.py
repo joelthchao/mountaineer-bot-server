@@ -5,6 +5,7 @@ import arrow
 from bs4 import BeautifulSoup
 import pandas as pd
 
+from mtn_bot_server import config
 from mtn_bot_server.utils import (
     get_html_by_selenium,
     ErrorCode,
@@ -16,7 +17,8 @@ mapping = pd.read_csv('resources/coordinates.csv').set_index('name').to_dict()['
 
 def query_meteoblue_forecast(location):
     ts = arrow.now()
-    output_file = '{}-{}-meteoblue.txt'.format(location, ts.format('YYYYMMDDTHH'))
+    output_name = '{}-{}-meteoblue.txt'.format(location, ts.format('YYYYMMDDTHH'))
+    output_file = os.path.join(config.CACHE_PATH, output_name)
     if os.path.exists(output_file):
         with open(output_file, 'r') as f:
             image_url = next(f).strip()

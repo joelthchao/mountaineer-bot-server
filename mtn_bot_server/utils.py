@@ -59,6 +59,7 @@ def df2img(title, df, img_file):
     html_template = """
     <html>
       <head>
+        <meta charset="UTF-8">
         {style}
       </head>
       <body>
@@ -75,6 +76,7 @@ def df2img(title, df, img_file):
         'disable-smart-width': '',
         'encoding': 'UTF-8',
         'quiet': '',
+        'xvfb': '',
     }
     imgkit.from_string(html, img_file, options=options)
 

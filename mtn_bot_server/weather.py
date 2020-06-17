@@ -13,8 +13,12 @@ def query_weather(location, user='anonymous'):
     data = {}
     if cwb_res['errno'] == ErrorCode.SUCCESS.value:
         data['cwb'] = cwb_res['data']
+    else:
+        print('Fail to query CWB: {}'.format(cwb_res))
 
     if meteoblue_res['errno'] == ErrorCode.SUCCESS.value:
         data['meteoblue'] = meteoblue_res['data']
+    else:
+        print('Fail to query Meteoblue: {}'.format(meteoblue_res))
 
     return data
