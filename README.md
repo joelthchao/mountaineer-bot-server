@@ -13,3 +13,6 @@ Server for mountaineer bot
 - [ ] logging
 - [x] Style configuration
 - [x] Lint configuration
+- [ ] Subscribe function
+- [ ] Cronjob service
+- [ ] Error feedback for user

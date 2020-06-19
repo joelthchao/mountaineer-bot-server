@@ -6,6 +6,8 @@ import imgkit
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
+from mtn_bot_server import config
+
 
 class ErrorCode(Enum):
     SUCCESS = 0
@@ -78,6 +80,13 @@ def df2img(title, df, img_file):
     if sys.platform != 'darwin':
         options['xvfb'] = ''
     imgkit.from_string(html, img_file, options=options)
+
+
+def parse_intention(text):
+    if '訂閱' in text or 'subscribe' in text:
+        return config.SUBSCRIBE_INTENTION
+    else:
+        return config.QUERY_INTENTION
 
 
 weather_query_re = re.compile(r'查?(.*[^的])的?(天氣|預報)')

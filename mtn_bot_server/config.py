@@ -17,3 +17,7 @@ PORT = 5050
 IMAGE_ROUTE = 'image'
 SSL_CRT = os.environ.get('SSL_CRT')
 SSL_PRIVATE_KEY = os.environ.get('SSL_PRIVATE_KEY')
+
+# intention
+QUERY_INTENTION = 'query'
+SUBSCRIBE_INTENTION = 'subscribe'

@@ -12,7 +12,10 @@ from linebot.models import (
 
 from mtn_bot_server import config
 from mtn_bot_server.weather import query_weather
-from mtn_bot_server.utils import parse_query_request
+from mtn_bot_server.utils import (
+    parse_intention,
+    parse_query_request,
+)
 
 
 app = Flask(__name__)
@@ -40,6 +43,16 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    intention = parse_intention(event.message.text)
+    if intention == config.QUERY_INTENTION:
+        handle_query_weather_message(event)
+    elif intention == config.SUBSCRIBE_INTENTION:
+        handle_subscribe_message(event)
+    else:
+        handle_unknown_message(event)
+
+
+def handle_query_weather_message(event):
     location = parse_query_request(event.message.text)
     data = query_weather(location)
 
@@ -55,6 +68,16 @@ def handle_message(event):
     messages = [text_message, cwb_image_message, meteoblue_image_message]
 
     line_bot_api.reply_message(event.reply_token, messages)
+
+
+def handle_subscribe_message(event):
+    text_message = TextSendMessage(text='接收訂閱請求: ""'.format(event.message.text))
+    line_bot_api.reply_message(event.reply_token, text_message)
+
+
+def handle_unknown_message(event):
+    text_message = TextSendMessage(text='無法理解此訊息: ""'.format(event.message.text))
+    line_bot_api.reply_message(event.reply_token, text_message)
 
 
 @app.route('/image/<path:path>')
