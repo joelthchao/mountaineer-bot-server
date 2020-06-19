@@ -12,6 +12,7 @@ from linebot.models import (
 
 from mtn_bot_server import config
 from mtn_bot_server.weather import query_weather
+from mtn_bot_server.subscribe import process_subscribe
 from mtn_bot_server.utils import (
     parse_intention,
     parse_query_request,
@@ -71,12 +72,14 @@ def handle_query_weather_message(event):
 
 
 def handle_subscribe_message(event):
-    text_message = TextSendMessage(text='接收訂閱請求: ""'.format(event.message.text))
+    data = process_subscribe(event.message.text)
+    text_message = TextSendMessage(text='預計於 {} 發送 {} 的天氣預報'.format(
+        data['time'].format('YYYYMMDDTmm:dd'), data['location']))
     line_bot_api.reply_message(event.reply_token, text_message)
 
 
 def handle_unknown_message(event):
-    text_message = TextSendMessage(text='無法理解此訊息: ""'.format(event.message.text))
+    text_message = TextSendMessage(text='無法理解此訊息: "{}"'.format(event.message.text))
     line_bot_api.reply_message(event.reply_token, text_message)
 
 
