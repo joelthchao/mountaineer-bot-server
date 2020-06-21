@@ -72,7 +72,7 @@ def handle_query_weather_message(event):
 
 
 def handle_subscribe_message(event):
-    data = process_subscribe(event.message.text)
+    data = process_subscribe(event.source.user_id, event.message.text)
     text_message = TextSendMessage(text='預計於 {} 發送 {} 的天氣預報'.format(
         data['data']['time'].format('YYYY/MM/DD HH:mm'), data['data']['location']))
     line_bot_api.reply_message(event.reply_token, text_message)

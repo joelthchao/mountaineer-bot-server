@@ -6,3 +6,4 @@ requests
 selenium
 Flask
 line-bot-sdk
+sqlite3

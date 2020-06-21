@@ -21,3 +21,7 @@ SSL_PRIVATE_KEY = os.environ.get('SSL_PRIVATE_KEY')
 # intention
 QUERY_INTENTION = 'query'
 SUBSCRIBE_INTENTION = 'subscribe'
+
+# DB
+DB_PATH = 'subscribe.sqlite3'
+DB_NAME = 'subscribes'
