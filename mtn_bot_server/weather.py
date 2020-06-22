@@ -19,6 +19,3 @@ def query_weather(location, user='anonymous'):
         print('Fail to query Meteoblue: {}'.format(meteoblue_res))
 
     return data
-
-
-def push_line_message(user_id, message):

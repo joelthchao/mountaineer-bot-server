@@ -13,7 +13,7 @@ from mtn_bot_server.utils import push_line_message
 
 def setup():
     cron = CronTab(user='joelthchao')
-    job = cron.new(command='cd {} && python -m mtn_bot_server.cronjob --mode run'.format(
+    job = cron.new(command='cd {} && python -m mtn_bot_server.cronjob --mode run > cronjob.log'.format(
         config.PROJECT_PATH))
     job.minute.on(0, 10, 20, 30, 40, 50)
     cron.write()
