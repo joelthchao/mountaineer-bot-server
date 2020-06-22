@@ -24,7 +24,7 @@ def run():
     locations = set()
     user_locs = defaultdict(list)
     ts = arrow.now()
-    start_ts = ts.shift(minute=-10).timestamp
+    start_ts = ts.shift(minutes=-10).timestamp
     end_ts = ts.timestamp
     for user_id, location in db.query_by_ts(start_ts, end_ts):
         user_locs[user_id].append(location)
