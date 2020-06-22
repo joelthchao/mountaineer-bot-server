@@ -1,4 +1,5 @@
 import os
+import pathlib
 
 # static
 CWB_IMAGE_PATH = 'mtn_bot_server/static'
@@ -25,3 +26,6 @@ SUBSCRIBE_INTENTION = 'subscribe'
 # DB
 DB_PATH = 'subscribe.sqlite3'
 DB_NAME = 'subscribes'
+
+# path
+PROJECT_PATH = pathlib.Path(__file__).parent.parent.absolute()
