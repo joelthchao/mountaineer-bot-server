@@ -3,10 +3,14 @@ import re
 import sys
 
 import imgkit
+from linebot import LineBotApi
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 from mtn_bot_server import config
+
+
+line_bot_api = LineBotApi(config.LINE_CHANNEL_ACCESS_TOKEN)
 
 
 class ErrorCode(Enum):
@@ -95,3 +99,7 @@ weather_query_re = re.compile(r'查?(.*[^的])的?(天氣|預報)')
 def parse_query_request(text):
     match = weather_query_re.match(text)
     return match.group(1).strip()
+
+
+def push_line_message(user_id, message):
+    line_bot_api.push_message(user_id, message)
