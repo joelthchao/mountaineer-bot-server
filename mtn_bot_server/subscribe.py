@@ -10,7 +10,7 @@ from mtn_bot_server.utils import ErrorCode
 def process_subscribe(user_id, text):
     data = parse_subscribe(text)
     db = SubscribeDB()
-    db.insert_record(user_id, data['time'], data['location'])
+    db.insert_record(user_id, data['time'].timestamp, data['location'])
     return {
         'errno': ErrorCode.SUCCESS.value,
         'errmsg': 'Success',
