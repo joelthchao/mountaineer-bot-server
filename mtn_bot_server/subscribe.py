@@ -54,8 +54,9 @@ class SubscribeDB:
         self.conn.execute(query)
         self.conn.commit()
 
-    def query_by_ts(self, ts):
-        query = '''SELECT user_id, location FROM {} WHERE ts={}'''.format(self.db_name, ts)
+    def query_by_ts(self, start_ts, end_ts):
+        query = '''SELECT user_id, location FROM {} WHERE ts >= {} AND ts <= {}'''.format(
+            self.db_name, start_ts, end_ts)
         res = self.conn.execute(query)
         return list(res)
 
