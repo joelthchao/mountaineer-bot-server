@@ -7,7 +7,7 @@ def query_weather(location, user='anonymous'):
     cwb_res = query_cwb_forecast(location)
     meteoblue_res = query_meteoblue_forecast(location)
 
-    data = {}
+    data = {'location': location}
     if cwb_res['errno'] == ErrorCode.SUCCESS.value:
         data['cwb'] = cwb_res['data']
     else:
@@ -19,3 +19,6 @@ def query_weather(location, user='anonymous'):
         print('Fail to query Meteoblue: {}'.format(meteoblue_res))
 
     return data
+
+
+def push_line_message(user_id, message):

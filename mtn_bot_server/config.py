@@ -14,6 +14,7 @@ LINE_CHANNEL_SECRET = os.environ.get('LINE_CHANNEL_SECRET')
 LINE_CHANNEL_ACCESS_TOKEN = os.environ.get('LINE_CHANNEL_ACCESS_TOKEN')
 
 # https
+HOST = 'gcp-mtn-linebot.mtn-linebot.nctu.me'
 PORT = 5050
 IMAGE_ROUTE = 'image'
 SSL_CRT = os.environ.get('SSL_CRT')

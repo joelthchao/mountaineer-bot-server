@@ -61,9 +61,9 @@ def handle_query_weather_message(event):
 
 
 def make_weather_message(data):
-    text_message = TextSendMessage(text='以下是"{}"的天氣預報'.format(location))
+    text_message = TextSendMessage(text='以下是"{}"的天氣預報'.format(data['location']))
     cwb_image_url = os.path.join(
-        'https://', request.host, config.IMAGE_ROUTE, data['cwb']['image_name'])
+        'https://', config.HOST + ':' + config.PORT, config.IMAGE_ROUTE, data['cwb']['image_name'])
     cwb_image_message = ImageSendMessage(
         original_content_url=cwb_image_url, preview_image_url=cwb_image_url)
 
