@@ -13,8 +13,11 @@ from mtn_bot_server.utils import push_line_message
 
 def setup():
     cron = CronTab(user='joelthchao')
-    job = cron.new(command='cd {} && python -m mtn_bot_server.cronjob --mode run > cronjob.log'.format(
-        config.PROJECT_PATH))
+    job = cron.new(command=(
+        'pyenv activate mtn-bot-server && '
+        'cd {} && '
+        'python -m mtn_bot_server.cronjob --mode run '
+        '>> cronjob.log 2>&1').format(config.PROJECT_PATH))
     job.minute.on(0, 10, 20, 30, 40, 50)
     cron.write()
 
@@ -39,10 +42,8 @@ def run():
 
     for user_id, locations in user_locs.items():
         print('Send message to user {}'.format(user_id))
-        messages = []
         for location in locations:
-            messages.extend(loc_msg[location])
-        push_line_message(user_id, messages)
+            push_line_message(user_id, loc_msg[location])
 
 
 def main(args):
