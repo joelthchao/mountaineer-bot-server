@@ -1,4 +1,5 @@
 import os
+import pathlib
 
 # static
 CWB_IMAGE_PATH = 'mtn_bot_server/static'
@@ -13,6 +14,7 @@ LINE_CHANNEL_SECRET = os.environ.get('LINE_CHANNEL_SECRET')
 LINE_CHANNEL_ACCESS_TOKEN = os.environ.get('LINE_CHANNEL_ACCESS_TOKEN')
 
 # https
+HOST = 'gcp-mtn-linebot.mtn-linebot.nctu.me'
 PORT = 5050
 IMAGE_ROUTE = 'image'
 SSL_CRT = os.environ.get('SSL_CRT')
@@ -25,3 +27,6 @@ SUBSCRIBE_INTENTION = 'subscribe'
 # DB
 DB_PATH = 'subscribe.sqlite3'
 DB_NAME = 'subscribes'
+
+# path
+PROJECT_PATH = pathlib.Path(__file__).parent.parent.absolute()
