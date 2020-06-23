@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+"""
+Utility function
+"""
 from enum import Enum
 import re
 import sys
@@ -14,6 +18,7 @@ line_bot_api = LineBotApi(config.LINE_CHANNEL_ACCESS_TOKEN)
 
 
 class ErrorCode(Enum):
+    """Error Code"""
     SUCCESS = 0
     ERR_NETWORK = 1
     ERR_MISSING = 2
@@ -21,6 +26,7 @@ class ErrorCode(Enum):
 
 
 def get_html_by_selenium(url):
+    """Scrap html by selenium"""
     chrome_options = Options()
     chrome_options.add_argument('--headless')
     # headless has smaller window size, need to adjust for better display
@@ -33,6 +39,7 @@ def get_html_by_selenium(url):
 
 
 def df2img(title, df, img_file):
+    """Transform pandas dataframe table to table image"""
     style = """
     <style>
     h3 {
@@ -87,19 +94,24 @@ def df2img(title, df, img_file):
 
 
 def parse_intention(text):
+    """parse message intention"""
     if '訂閱' in text or 'subscribe' in text:
         return config.SUBSCRIBE_INTENTION
-    else:
+    elif '天氣' in text:
         return config.QUERY_INTENTION
+    else:
+        return config.UNKNOWN_INTENTION
 
 
 weather_query_re = re.compile(r'查?(.*[^的])的?(天氣|預報)')
 
 
 def parse_query_request(text):
+    """parse weather query"""
     match = weather_query_re.match(text)
     return match.group(1).strip()
 
 
 def push_line_message(user_id, message):
+    """push line message"""
     line_bot_api.push_message(user_id, message)

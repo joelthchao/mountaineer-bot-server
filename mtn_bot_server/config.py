@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+"""
+Configuration
+"""
 import os
 import pathlib
 
@@ -23,6 +27,7 @@ SSL_PRIVATE_KEY = os.environ.get('SSL_PRIVATE_KEY')
 # intention
 QUERY_INTENTION = 'query'
 SUBSCRIBE_INTENTION = 'subscribe'
+UNKNOWN_INTENTION = 'unknown'
 
 # DB
 DB_PATH = 'subscribe.sqlite3'
