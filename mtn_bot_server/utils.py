@@ -31,7 +31,7 @@ def get_html_by_selenium(url):
     chrome_options.add_argument('--headless')
     # headless has smaller window size, need to adjust for better display
     chrome_options.add_argument('window-size=1920,1080')
-    driver = webdriver.Chrome(options=chrome_options)
+    driver = webdriver.Chrome(config.CHROMEDRIVER_PATH, options=chrome_options)
     driver.get(url)
     html = driver.page_source
     driver.quit()

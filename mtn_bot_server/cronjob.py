@@ -20,7 +20,6 @@ def setup():
     """setup system crontab"""
     cron = CronTab(user='joelthchao')
     job = cron.new(command=(
-        'pyenv activate mtn-bot-server && '
         'cd {} && '
         'python -m mtn_bot_server.cronjob --mode run '
         '>> cronjob.log 2>&1').format(config.PROJECT_PATH))
