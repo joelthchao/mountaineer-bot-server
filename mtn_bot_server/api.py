@@ -56,10 +56,14 @@ def handle_message(event):
 def handle_query_weather_message(event):
     location = parse_query_request(event.message.text)
     data = query_weather(location)
+    messages = make_weather_message(data)
+    line_bot_api.reply_message(event.reply_token, messages)
 
-    text_message = TextSendMessage(text='以下是"{}"的天氣預報'.format(location))
-    cwb_image_url = os.path.join(
-        'https://', request.host, config.IMAGE_ROUTE, data['cwb']['image_name'])
+
+def make_weather_message(data):
+    text_message = TextSendMessage(text='以下是"{}"的天氣預報'.format(data['location']))
+    cwb_image_url = 'https://{}:{}/{}/{}'.format(
+        config.HOST, config.PORT, config.IMAGE_ROUTE, data['cwb']['image_name'])
     cwb_image_message = ImageSendMessage(
         original_content_url=cwb_image_url, preview_image_url=cwb_image_url)
 
@@ -68,7 +72,7 @@ def handle_query_weather_message(event):
         original_content_url=meteoblue_image_url, preview_image_url=meteoblue_image_url)
     messages = [text_message, cwb_image_message, meteoblue_image_message]
 
-    line_bot_api.reply_message(event.reply_token, messages)
+    return messages
 
 
 def handle_subscribe_message(event):

@@ -5,3 +5,4 @@ __pycache__/
 cache/
 mtn_bot_server/static/
 *.sqlite3
+*.pyc
