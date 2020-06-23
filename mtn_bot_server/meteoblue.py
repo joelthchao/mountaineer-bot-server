@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+"""
+Query meteoblue weather (meteoblue.com)
+"""
 import os
 
 import arrow
@@ -15,6 +19,7 @@ mapping = pd.read_csv('resources/coordinates.csv').set_index('name').to_dict()['
 
 
 def query_meteoblue_forecast(location):
+    """query meteoblue weather forecast for a location"""
     ts = arrow.now()
     output_name = '{}-{}-meteoblue.txt'.format(location, ts.format('YYYYMMDDTHH'))
     output_file = os.path.join(config.CACHE_PATH, output_name)
@@ -76,18 +81,16 @@ def query_meteoblue_forecast(location):
 
 
 def make_meteoblue_url(location):
+    """compose meteoblue url"""
     coordinate = mapping[location]
     url = 'https://www.meteoblue.com/en/weather/week/{}'.format(coordinate)
     return url
 
 
 def parse_image_url(html):
+    """scrap image link from website"""
     soup = BeautifulSoup(html, features='html.parser')
     container = soup.find('div', attrs={'class': 'bloo_content'})
     img = container.find('img')
     img_url = 'https:' + img.attrs['data-original']
     return img_url
-
-
-if __name__ == '__main__':
-    print(query_meteoblue_forecast('南湖大山'))

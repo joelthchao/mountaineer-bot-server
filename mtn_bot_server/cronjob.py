@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+"""
+Cronjob for subscribe notification.
+Periodicly check subscription and send notification if required.
+"""
 import argparse
 from collections import defaultdict
 
@@ -12,9 +17,9 @@ from mtn_bot_server.utils import push_line_message
 
 
 def setup():
+    """setup system crontab"""
     cron = CronTab(user='joelthchao')
     job = cron.new(command=(
-        'pyenv activate mtn-bot-server && '
         'cd {} && '
         'python -m mtn_bot_server.cronjob --mode run '
         '>> cronjob.log 2>&1').format(config.PROJECT_PATH))
@@ -23,6 +28,7 @@ def setup():
 
 
 def run():
+    """run subscribe notification job"""
     db = SubscribeDB()
     locations = set()
     user_locs = defaultdict(list)
@@ -47,6 +53,7 @@ def run():
 
 
 def main(args):
+    """main function"""
     if args.mode == 'run':
         run()
     elif args.mode == 'setup':
@@ -56,7 +63,7 @@ def main(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='mountaineer-bot')
+    parser = argparse.ArgumentParser(description='Mountaineer Bot cronjob')
     parser.add_argument('--mode', type=str, default='run')
     arguments = parser.parse_args()
     main(arguments)

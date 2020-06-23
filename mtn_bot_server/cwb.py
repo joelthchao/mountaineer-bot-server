@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+"""
+Query CWB weather (cwb.gov.tw)
+"""
 import base64
 import os
 
@@ -17,6 +21,7 @@ mapping = pd.read_csv('resources/codes.csv').set_index('name').to_dict()['code']
 
 
 def query_cwb_forecast(location):
+    """query cwb weather forecast for a location"""
     ts = arrow.now()
     # encode utf-8 characters for url safety
     location_key = base64.b64encode(location.encode('utf-8')).decode('utf-8')
@@ -85,6 +90,7 @@ def query_cwb_forecast(location):
 
 
 def make_cwb_url(location):
+    """compose cwb url"""
     url_template = 'https://www.cwb.gov.tw/V8/C/L/Mountain/Mountain.html?PID={}'
     code = mapping[location]
     url = url_template.format(code)
@@ -92,6 +98,7 @@ def make_cwb_url(location):
 
 
 def parse_cwb_hourly_forcast(html):
+    """scrap information from website"""
     soup = BeautifulSoup(html, features='html.parser')
     title = soup.find('h2', attrs={'class': 'main-title'}).find('span').text.strip()
     table = soup.find('div', attrs={'id': 'PC_hr'}).find('table', attrs={'class': 'table'})
@@ -117,6 +124,7 @@ def parse_cwb_hourly_forcast(html):
 
 
 def parse_cwb_time_row(row):
+    """parse time"""
     times = []
     for th in row.find_all('th'):
         spans = th.find_all('span')
@@ -125,11 +133,13 @@ def parse_cwb_time_row(row):
 
 
 def parse_cwb_temp_row(row):
+    """parse temperature"""
     temps = [td.find('span').text.strip() for td in row.find_all('td')]
     return temps
 
 
 def parse_cwb_rain_row(row):
+    """parse rain"""
     rains = []
     for td in row.find_all('td'):
         rains.append(td.text.strip())
@@ -140,24 +150,24 @@ def parse_cwb_rain_row(row):
 
 
 def parse_cwb_feel_row(row):
+    """parse feel temperature"""
     feels = [td.find('span').text.strip() for td in row.find_all('td')]
     return feels
 
 
 def parse_cwb_humid_row(row):
+    """parse humid"""
     humids = [td.text.strip() for td in row.find_all('td')]
     return humids
 
 
 def parse_cwb_wind_row(row):
+    """parse wind"""
     winds = [span.text.strip() for span in row.find_all('span', attrs={'class': 'wind_1'})]
     return winds
 
 
 def parse_cwb_desc_row(row):
+    """parse description"""
     descs = [p.text.strip() for p in row.find_all('p')]
     return descs
-
-
-if __name__ == '__main__':
-    print(query_cwb_forecast('南湖大山'))
