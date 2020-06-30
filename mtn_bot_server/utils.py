@@ -25,13 +25,17 @@ class ErrorCode(Enum):
     ERR_UNKNOWN = 3
 
 
-def get_html_by_selenium(url):
+def get_html_by_selenium(url, cookies=None):
     """Scrap html by selenium"""
     chrome_options = Options()
     chrome_options.add_argument('--headless')
     # headless has smaller window size, need to adjust for better display
     chrome_options.add_argument('window-size=1920,1080')
     driver = webdriver.Chrome(config.CHROMEDRIVER_PATH, options=chrome_options)
+    if cookies is not None:
+        driver.get(url)
+        for cookie in cookies:
+            driver.add_cookie(cookie)
     driver.get(url)
     html = driver.page_source
     driver.quit()

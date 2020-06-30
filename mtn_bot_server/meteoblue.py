@@ -47,8 +47,14 @@ def query_meteoblue_forecast(location):
         }
 
     # retrive html content by selenium
+    cookies = [
+        {'name': 'temp', 'value': 'CELSIUS'},
+        {'name': 'precip', 'value': 'MILLIMETER'},
+        {'name': 'speed', 'value': 'KILOMETER_PER_HOUR'},
+        {'name': 'locale', 'value': 'en_GB'},
+    ]
     try:
-        html = get_html_by_selenium(url)
+        html = get_html_by_selenium(url, cookies)
     except:
         return {
             'errno': ErrorCode.ERR_NETWORK.value,
