@@ -3,6 +3,7 @@ __pycache__/
 *.png
 *.txt
 cache/
+log/
 mtn_bot_server/static/
 *.sqlite3
 *.pyc

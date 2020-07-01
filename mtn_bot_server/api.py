@@ -21,6 +21,7 @@ from linebot.models import (
 )
 
 from mtn_bot_server import config
+from mtn_bot_server.log import get_logger
 from mtn_bot_server.weather import query_weather
 from mtn_bot_server.subscribe import process_subscribe
 from mtn_bot_server.utils import (
@@ -32,6 +33,7 @@ from mtn_bot_server.utils import (
 app = Flask(__name__)
 line_bot_api = LineBotApi(config.LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(config.LINE_CHANNEL_SECRET)
+logger = get_logger(__name__)
 
 
 @app.route("/callback", methods=['POST'])
@@ -39,11 +41,12 @@ def callback():
     """line bot webhook entry"""
     signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
+    logger.info('Request body: %s', body)
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
-        print("Invalid signature. Please check your channel access token/channel secret.")
+        logger.exception(
+            'Invalid signature. Please check your channel access token/channel secret.')
         abort(400)
 
     return 'OK'

@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 from mtn_bot_server import config
+from mtn_bot_server.log import get_logger
 from mtn_bot_server.utils import (
     get_html_by_selenium,
     df2img,
@@ -17,6 +18,7 @@ from mtn_bot_server.utils import (
 )
 
 
+logger = get_logger(__name__)
 mapping = pd.read_csv('resources/codes.csv').set_index('name').to_dict()['code']
 
 
@@ -28,6 +30,7 @@ def query_cwb_forecast(location):
     image_name = '{}-{}-cwb.jpg'.format(location_key, ts.format('YYYYMMDDTHH'))
     output_file = os.path.join(config.CWB_IMAGE_PATH, image_name)
     if os.path.exists(output_file):
+        logger.info('Use cache: %s', output_file)
         return {
             'errno': ErrorCode.SUCCESS.value,
             'errmsg': 'Success',
@@ -42,6 +45,7 @@ def query_cwb_forecast(location):
     try:
         url = make_cwb_url(location)
     except KeyError:
+        logger.exception('Fail to compose cwb query url')
         return {
             'errno': ErrorCode.ERR_MISSING.value,
             'errmsg': 'Location not found in coordinate mapping ({})'.format(location),
@@ -52,6 +56,7 @@ def query_cwb_forecast(location):
     try:
         html = get_html_by_selenium(url)
     except:
+        logger.exception('Fail to retrive html content by selenium')
         return {
             'errno': ErrorCode.ERR_NETWORK.value,
             'errmsg': 'Encounter network issue ({})'.format(url),
@@ -62,6 +67,7 @@ def query_cwb_forecast(location):
     try:
         title, df = parse_cwb_hourly_forcast(html)
     except:
+        logger.exception('Fail to parse data')
         return {
             'errno': ErrorCode.ERR_UNKNOWN.value,
             'errmsg': 'Encounter parse issue ({})'.format(url),
@@ -72,6 +78,7 @@ def query_cwb_forecast(location):
     try:
         df2img(title, df, output_file)
     except:
+        logger.exception('Fail to convert to photo')
         return {
             'errno': ErrorCode.ERR_UNKNOWN.value,
             'errmsg': 'Encounter image conversion issue ({})'.format(url),
