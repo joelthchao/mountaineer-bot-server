@@ -84,7 +84,6 @@ def df2img(title, df, img_file):
     """
     html = html_template.format(
         style=style, title=title, table=df.to_html(index_names=False, classes='mystyle'))
-    # print(df.to_html())
     options = {
         'width': 620,
         'disable-smart-width': '',

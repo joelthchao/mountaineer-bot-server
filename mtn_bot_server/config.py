@@ -13,6 +13,12 @@ os.makedirs(CWB_IMAGE_PATH, exist_ok=True)
 CACHE_PATH = 'cache'
 os.makedirs(CACHE_PATH, exist_ok=True)
 
+# log
+LOG_PATH = 'log'
+os.makedirs(LOG_PATH, exist_ok=True)
+RUNNING_LOG_FILE = os.path.join(LOG_PATH, 'running.log')
+IMPORTANT_LOG_FILE = os.path.join(LOG_PATH, 'important.log')
+
 # linebot
 LINE_CHANNEL_SECRET = os.environ.get('LINE_CHANNEL_SECRET')
 LINE_CHANNEL_ACCESS_TOKEN = os.environ.get('LINE_CHANNEL_ACCESS_TOKEN')
