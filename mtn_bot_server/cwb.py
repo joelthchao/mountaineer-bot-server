@@ -14,7 +14,10 @@ from mtn_bot_server.log import get_logger
 from mtn_bot_server.utils import (
     get_html_by_selenium,
     df2img,
-    ErrorCode,
+    NotSupportError,
+    SeleniumError,
+    CWBParseError,
+    ImageGenerateError,
 )
 
 
@@ -32,67 +35,43 @@ def query_cwb_forecast(location):
     if os.path.exists(output_file):
         logger.info('Use cache: %s', output_file)
         return {
-            'errno': ErrorCode.SUCCESS.value,
-            'errmsg': 'Success',
-            'data': {
-                'location': location,
-                'query_time': 'cached',
-                'image_name': image_name,
-            }
+            'location': location,
+            'query_time': 'cached',
+            'image_name': image_name,
         }
 
     # compose cwb query url
     try:
         url = make_cwb_url(location)
     except KeyError:
-        logger.exception('Fail to compose cwb query url')
-        return {
-            'errno': ErrorCode.ERR_MISSING.value,
-            'errmsg': 'Location not found in coordinate mapping ({})'.format(location),
-            'data': {},
-        }
+        logger.error('Fail to compose cwb query url')
+        raise NotSupportError('Location not found in coordinate mapping ({})'.format(location))
 
     # retrive html content by selenium
     try:
         html = get_html_by_selenium(url)
     except:
-        logger.exception('Fail to retrive html content by selenium')
-        return {
-            'errno': ErrorCode.ERR_NETWORK.value,
-            'errmsg': 'Encounter network issue ({})'.format(url),
-            'data': {},
-        }
+        logger.error('Fail to retrive html content by selenium')
+        raise SeleniumError('Fail to retrive html content by selenium')
 
     # parse data
     try:
         title, df = parse_cwb_hourly_forcast(html)
     except:
-        logger.exception('Fail to parse data')
-        return {
-            'errno': ErrorCode.ERR_UNKNOWN.value,
-            'errmsg': 'Encounter parse issue ({})'.format(url),
-            'data': {},
-        }
+        logger.error('Fail to parse data')
+        raise CWBParseError('Encounter parse issue ({})'.format(url))
 
     # convert to photo
     try:
         df2img(title, df, output_file)
     except:
-        logger.exception('Fail to convert to photo')
-        return {
-            'errno': ErrorCode.ERR_UNKNOWN.value,
-            'errmsg': 'Encounter image conversion issue ({})'.format(url),
-            'data': {},
-        }
+        logger.error('Fail to convert to photo')
+        raise ImageGenerateError('Encounter image conversion issue ({})'.format(url))
 
     return {
-        'errno': ErrorCode.SUCCESS.value,
-        'errmsg': 'Success',
-        'data': {
-            'location': location,
-            'query_time': ts.format('YYYY-MM-DDTHH:mm:ssZZ'),
-            'image_name': image_name,
-        }
+        'location': location,
+        'query_time': ts.format('YYYY-MM-DDTHH:mm:ssZZ'),
+        'image_name': image_name,
     }
 
 

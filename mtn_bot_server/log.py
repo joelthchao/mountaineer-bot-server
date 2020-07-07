@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+"""
+Logging
+"""
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import os
@@ -11,6 +15,7 @@ DEFAULT_FORMAT = '%(levelname)s: %(asctime)s.%(msecs)03d: %(filename)s:%(lineno)
 
 
 def get_logger(name, level=logging.INFO):
+    """In this project, logger can only be got here"""
     if name not in LOGGERS:
         logger = logging.getLogger(name)
         logger.setLevel(level)
@@ -65,7 +70,8 @@ class MultiProcessingTimedRotatingFileHandler(TimedRotatingFileHandler):
     def computeRollover(self, currentTime):
         if self.when[0] == 'W' or self.when == 'MIDNIGHT':
             # use existing computation
-            return super(MultiProcessingTimedRotatingFileHandler, self).computeRollover(currentTime)
+            return (super(MultiProcessingTimedRotatingFileHandler, self)
+                    .computeRollover(currentTime))
         # round time up to nearest next multiple of the interval
         return (currentTime // self.interval) * self.interval
 

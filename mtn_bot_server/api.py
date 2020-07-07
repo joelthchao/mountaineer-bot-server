@@ -23,10 +23,20 @@ from linebot.models import (
 from mtn_bot_server import config
 from mtn_bot_server.log import get_logger
 from mtn_bot_server.weather import query_weather
-from mtn_bot_server.subscribe import process_subscribe
+from mtn_bot_server.subscribe import (
+    process_subscribe,
+
+)
 from mtn_bot_server.utils import (
     parse_intention,
     parse_query_request,
+    ParseError,
+    SqliteDBError,
+    NotSupportError,
+    SeleniumError,
+    CWBParseError,
+    MeteoblueParseError,
+    ImageGenerateError,
 )
 
 
@@ -66,10 +76,27 @@ def handle_message(event):
 
 def handle_query_weather_message(event):
     """query weather reply logic"""
-    location = parse_query_request(event.message.text)
-    data = query_weather(location)
-    messages = make_weather_message(data)
-    line_bot_api.reply_message(event.reply_token, messages)
+    try:
+        location = parse_query_request(event.message.text)
+    except ParseError:
+        message = TextSendMessage(text='天氣查詢請求格式錯誤!')
+
+    try:
+        data = query_weather(location)
+        message = make_weather_message(data)
+    except NotSupportError:
+        message = TextSendMessage(text='地點不存在!')
+    except SeleniumError:
+        message = TextSendMessage(text='抓取網站失敗!')
+    except CWBParseError:
+        message = TextSendMessage(text='中央氣象局天氣分析錯誤!')
+    except MeteoblueParseError:
+        message = TextSendMessage(text='Meteoblue天氣分析錯誤!')
+    except ImageGenerateError:
+        message = TextSendMessage(text='天氣圖片生成失敗!')
+    except Exception:
+        message = TextSendMessage(text='系統未知錯誤!')
+    line_bot_api.reply_message(event.reply_token, message)
 
 
 def make_weather_message(data):
@@ -90,9 +117,17 @@ def make_weather_message(data):
 
 def handle_subscribe_message(event):
     """subscribe reply logic"""
-    data = process_subscribe(event.source.user_id, event.message.text)
-    text_message = TextSendMessage(text='預計於 {} 發送 {} 的天氣預報'.format(
-        data['data']['time'].format('YYYY/MM/DD HH:mm'), data['data']['location']))
+    try:
+        data = process_subscribe(event.source.user_id, event.message.text)
+        text_message = TextSendMessage(text='預計於 {} 發送 {} 的天氣預報'.format(
+            data['data']['time'].format('YYYY/MM/DD HH:mm'), data['data']['location']))
+    except ParseError:
+        text_message = TextSendMessage(text='訂閱請求格式錯誤!')
+    except SqliteDBError:
+        text_message = TextSendMessage(text='系統資料庫錯誤!')
+    except Exception:
+        text_message = TextSendMessage(text='系統未知錯誤!')
+
     line_bot_api.reply_message(event.reply_token, text_message)
 
 

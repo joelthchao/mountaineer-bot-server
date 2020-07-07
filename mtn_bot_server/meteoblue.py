@@ -12,7 +12,9 @@ from mtn_bot_server import config
 from mtn_bot_server.log import get_logger
 from mtn_bot_server.utils import (
     get_html_by_selenium,
-    ErrorCode,
+    NotSupportError,
+    SeleniumError,
+    MeteoblueParseError,
 )
 
 
@@ -30,25 +32,17 @@ def query_meteoblue_forecast(location):
         with open(output_file, 'r') as f:
             image_url = next(f).strip()
         return {
-            'errno': ErrorCode.SUCCESS.value,
-            'errmsg': 'Success',
-            'data': {
-                'location': location,
-                'time': 'cached',
-                'image_url': image_url,
-            }
+            'location': location,
+            'time': 'cached',
+            'image_url': image_url,
         }
 
     # compose meteoblue query url
     try:
         url = make_meteoblue_url(location)
     except KeyError:
-        logger.exception('Fail to compose meteoblue query url')
-        return {
-            'errno': ErrorCode.ERR_MISSING.value,
-            'errmsg': 'Location not found in coordinate mapping ({})'.format(location),
-            'data': {},
-        }
+        logger.error('Fail to compose meteoblue query url')
+        raise NotSupportError('Location not found in coordinate mapping ({})'.format(location))
 
     # retrive html content by selenium
     cookies = [
@@ -60,35 +54,23 @@ def query_meteoblue_forecast(location):
     try:
         html = get_html_by_selenium(url, cookies)
     except:
-        logger.exception('Fail to retrive html content by selenium')
-        return {
-            'errno': ErrorCode.ERR_NETWORK.value,
-            'errmsg': 'Encounter network issue ({})'.format(url),
-            'data': {},
-        }
+        logger.error('Fail to retrive html content by selenium')
+        raise SeleniumError('Encounter network issue ({})'.format(url))
 
     # parse data
     try:
         image_url = parse_image_url(html)
     except:
-        logger.exception('Fail to parse data')
-        return {
-            'errno': ErrorCode.ERR_UNKNOWN.value,
-            'errmsg': 'Encounter parse issue ({})'.format(url),
-            'data': {},
-        }
+        logger.error('Fail to parse data')
+        raise MeteoblueParseError('Encounter parse issue ({})'.format(url))
 
     with open(output_file, 'w') as f:
         print(image_url, file=f)
 
     return {
-        'errno': ErrorCode.SUCCESS.value,
-        'errmsg': 'Success',
-        'data': {
-            'location': location,
-            'time': ts.format('YYYY-MM-DDTHH:mm:ssZZ'),
-            'image_url': image_url,
-        }
+        'location': location,
+        'time': ts.format('YYYY-MM-DDTHH:mm:ssZZ'),
+        'image_url': image_url,
     }
 
 
