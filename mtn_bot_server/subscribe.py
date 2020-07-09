@@ -8,14 +8,17 @@ import sqlite3
 import arrow
 
 from mtn_bot_server import config
-from mtn_bot_server.utils import ErrorCode
+from mtn_bot_server.utils import (
+    ErrorCode,
+    ParseError,
+    SqliteDBError,
+)
 
 
 def process_subscribe(user_id, text):
     """process a subscribe request"""
     data = parse_subscribe(text)
-    db = SubscribeDB()
-    db.insert_record(user_id, data['time'].timestamp, data['location'])
+    insert_record(user_id, data['time'].timestamp, data['location'])
     return {
         'errno': ErrorCode.SUCCESS.value,
         'errmsg': 'Success',
@@ -28,17 +31,29 @@ subscribe_re = re.compile(r'(訂閱|subscribe)\s*(\d{8})\s*(\d{4})?\s*([^的]+)�
 
 def parse_subscribe(text):
     """parse subscribe message"""
-    match = subscribe_re.match(text)
-    date = match.group(2)
-    hour = match.group(3)
-    location = match.group(4)
+    try:
+        match = subscribe_re.match(text)
+        date = match.group(2)
+        hour = match.group(3)
+        location = match.group(4)
+    except (AttributeError, IndexError):
+        raise ParseError('Fail to parse subscribe request')
     # fixme: timezone issue (maybe we can get timezone from line?)
     ts = arrow.get(date + hour, 'YYYYMMDDhhmm').replace(tzinfo='+08:00')
-    res = {
+    data = {
         'time': ts,
         'location': location,
     }
-    return res
+    return data
+
+
+def insert_record(user_id, ts, location):
+    """insert subscribe record into sqlite3"""
+    try:
+        db = SubscribeDB()
+        db.insert_record(user_id, ts, location)
+    except sqlite3.Error:
+        raise SqliteDBError('Encounter database error')
 
 
 class SubscribeDB:

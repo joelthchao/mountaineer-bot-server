@@ -17,6 +17,34 @@ from mtn_bot_server import config
 line_bot_api = LineBotApi(config.LINE_CHANNEL_ACCESS_TOKEN)
 
 
+class ParseError(Exception):
+    pass
+
+
+class SqliteDBError(Exception):
+    pass
+
+
+class NotSupportError(Exception):
+    pass
+
+
+class SeleniumError(Exception):
+    pass
+
+
+class CWBParseError(Exception):
+    pass
+
+
+class MeteoblueParseError(Exception):
+    pass
+
+
+class ImageGenerateError(Exception):
+    pass
+
+
 class ErrorCode(Enum):
     """Error Code"""
     SUCCESS = 0
@@ -111,8 +139,11 @@ weather_query_re = re.compile(r'查?(.*[^的])的?(天氣|預報)')
 
 def parse_query_request(text):
     """parse weather query"""
-    match = weather_query_re.match(text)
-    return match.group(1).strip()
+    try:
+        match = weather_query_re.match(text)
+        return match.group(1).strip()
+    except (AttributeError, IndexError):
+        raise ParseError('Fail to parse query request')
 
 
 def push_line_message(user_id, message):
