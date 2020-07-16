@@ -35,6 +35,6 @@ Add offical accounts by id: `@801tuftx`
 
 # TODO
 - [X] Documentation
-- [ ] System robustness
-- [ ] Error feedback for user
+- [X] System robustness
+- [X] Error feedback for user
 - [ ] Less network consumption
