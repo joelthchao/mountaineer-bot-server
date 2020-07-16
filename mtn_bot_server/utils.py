@@ -12,9 +12,14 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 from mtn_bot_server import config
+from mtn_bot_server.log import get_logger
 
 
-line_bot_api = LineBotApi(config.LINE_CHANNEL_ACCESS_TOKEN)
+logger = get_logger(__name__)
+if config.LINE_CHANNEL_ACCESS_TOKEN is not None:
+    line_bot_api = LineBotApi(config.LINE_CHANNEL_ACCESS_TOKEN)
+else:
+    logger.warning('Linebot service requires access token to enable')
 
 
 class ParseError(Exception):
@@ -74,18 +79,18 @@ def df2img(title, df, img_file):
     """Transform pandas dataframe table to table image"""
     style = """
     <style>
-    h3 {
+    h4 {
         text-align: center;
     }
     .mystyle {
-        font-size: 11pt;
+        font-size: 8pt;
         font-family: Arial;
         border-collapse: collapse;
         border: 1px solid silver;
-        width: 600px;
+        width: 340px;
     }
     .mystyle td, th {
-        padding: 5px;
+        padding: 3px;
         text-align: center;
     }
     .mystyle tr:nth-child(even) {
@@ -105,18 +110,18 @@ def df2img(title, df, img_file):
         {style}
       </head>
       <body>
-        <h3>{title}</h3>
-        {table}
+        <h4>{title}</h4>{table}
       </body>
     </html>
     """
     html = html_template.format(
         style=style, title=title, table=df.to_html(index_names=False, classes='mystyle'))
     options = {
-        'width': 620,
+        'width': 360,
         'disable-smart-width': '',
         'encoding': 'UTF-8',
         'quiet': '',
+        'quality': config.IMAGE_QUALITY,
     }
     # it requires xvfb package on linux.
     if sys.platform != 'darwin':
