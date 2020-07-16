@@ -83,11 +83,11 @@ def df2img(title, df, img_file):
         text-align: center;
     }
     .mystyle {
-        font-size: 8pt;
+        font-size: 7pt;
         font-family: Arial;
         border-collapse: collapse;
         border: 1px solid silver;
-        width: 340px;
+        width: 360px;
     }
     .mystyle td, th {
         padding: 3px;
@@ -117,7 +117,7 @@ def df2img(title, df, img_file):
     html = html_template.format(
         style=style, title=title, table=df.to_html(index_names=False, classes='mystyle'))
     options = {
-        'width': 360,
+        'width': 380,
         'disable-smart-width': '',
         'encoding': 'UTF-8',
         'quiet': '',

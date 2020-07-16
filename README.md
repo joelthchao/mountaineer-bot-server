@@ -37,4 +37,4 @@ Add offical accounts by id: `@801tuftx`
 - [X] Documentation
 - [X] System robustness
 - [X] Error feedback for user
-- [ ] Less network consumption
+- [X] Less network consumption
