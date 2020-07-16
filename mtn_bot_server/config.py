@@ -42,3 +42,6 @@ DB_NAME = 'subscribes'
 # path
 PROJECT_PATH = pathlib.Path(__file__).parent.parent.absolute()
 CHROMEDRIVER_PATH = '/usr/local/bin/chromedriver'
+
+# CWB
+IMAGE_QUALITY = 70

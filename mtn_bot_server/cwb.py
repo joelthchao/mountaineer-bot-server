@@ -97,15 +97,15 @@ def parse_cwb_hourly_forcast(html):
     winds = parse_cwb_wind_row(rows[11])
     descs = parse_cwb_desc_row(rows[13])
     df = pd.DataFrame({
-        'time': times,
-        'temp': temps,
-        'rain': rains,
-        'feel': feels,
-        'humid': humids,
-        'wind': winds,
-        'desc': descs,
+        'Time': times,
+        'Temp': temps,
+        'Rain': rains,
+        'Feel': feels,
+        'Humid': humids,
+        'Wind': winds,
+        'Desc': descs,
     })
-    df = df.set_index('time')
+    df = df.set_index('Time')
     return title, df
 
 
@@ -120,7 +120,7 @@ def parse_cwb_time_row(row):
 
 def parse_cwb_temp_row(row):
     """parse temperature"""
-    temps = [td.find('span').text.strip() for td in row.find_all('td')]
+    temps = [td.find('span').text.strip() + '°C' for td in row.find_all('td')]
     return temps
 
 
@@ -137,7 +137,7 @@ def parse_cwb_rain_row(row):
 
 def parse_cwb_feel_row(row):
     """parse feel temperature"""
-    feels = [td.find('span').text.strip() for td in row.find_all('td')]
+    feels = [td.find('span').text.strip() + '°C' for td in row.find_all('td')]
     return feels
 
 
